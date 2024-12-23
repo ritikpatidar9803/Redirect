@@ -1,16 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv='cache-control' content='no-cache'>
-<meta http-equiv='expires' content='0'>
-<meta http-equiv='pragma' content='no-cache'>
-  <title>Redirecting...</title>
-  <!-- The meta tag below redirects after 0 seconds -->
-  <meta http-equiv="refresh" content="0; url=https://colorwhistle.com/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Short Link Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #linkList {
+            margin-top: 20px;
+            list-style: none;
+        }
+        #linkList li {
+            margin: 10px 0;
+        }
+        .short-link {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <p>If you are not redirected, <a href="https://www.example.com">click here</a>.</p>
+    <h1>Dynamic Short Link Generator</h1>
+
+    <input type="text" id="sourceLink" placeholder="Enter your original link" style="width: 300px;">
+    <button id="generateBtn">Generate Short Link</button>
+
+    <h2>Generated Links</h2>
+    <ul id="linkList"></ul>
+
+    <script>
+    // URL to the raw JSON file on GitHub
+    const API_BASE_URL = "https://raw.githubusercontent.com/ritikpatidar9803/Redirect/main/links.json";
+
+    // Fetch all links from the GitHub-hosted JSON file
+    async function fetchLinks() {
+        try {
+            const response = await fetch(API_BASE_URL);
+            if (!response.ok) throw new Error("Failed to fetch links");
+            return await response.json();
+        } catch (error) {
+            console.error("Error fetching links:", error);
+            return [];
+        }
+    }
+
+    // Save a new link to the JSON file (note that this won't work directly with GitHub, 
+    // you would need an API or backend to handle POST requests)
+    async function saveLink(shortId, sourceLink, shortLink) {
+        try {
+            console.warn("Saving links directly to GitHub is not supported. Use a backend server or API.");
+            // Here you'd typically make a POST request to your backend server or an API.
+        } catch (error) {
+            console.error("Error saving link:", error);
+        }
+    }
+
+    // Update an existing link on the GitHub-hosted JSON file
+    async function updateLink(shortId, sourceLink) {
+        try {
+            console.warn("Updating links directly on GitHub is not supported. Use a backend server or API.");
+            // Similar to saving, you'd normally make a PUT request to an API or server.
+        } catch (error) {
+            console.error("Error updating link:", error);
+        }
+    }
+
+    // Generate a random short ID
+    function generateShortId() {
+        return Math.random().toString(36).substr(2, 6); // Example: "abc123"
+    }
+
+    // Add event listener to the "Generate Short Link" button
+    document.getElementById("generateBtn").addEventListener("click", async () => {
+        const sourceLink = document.getElementById("sourceLink").value.trim();
+        if (!sourceLink) {
+            alert("Please enter a valid link!");
+            return;
+        }
+
+        // Generate a unique short ID and short link
+        const shortId = generateShortId();
+        const shortLink = `http://short.ly/${shortId}`;
+
+        // Save the link to the GitHub-hosted file (this won't work directly)
+        await saveLink(shortId, sourceLink, shortLink);
+
+        // Display the generated short link
+        const linkList = document.getElementById("linkList");
+        const listItem = document.createElement("li");
+        listItem.innerHTML = `
+            <strong>Short Link:</strong> 
+            <span class="short-link" onclick="redirect('${shortId}')">${shortLink}</span>
+            <br>
+            <strong>Original Link:</strong> ${sourceLink}
+        `;
+        linkList.appendChild(listItem);
+
+        // Clear the input field
+        document.getElementById("sourceLink").value = "";
+    });
+
+    // Handle redirection (simulated using GitHub-hosted JSON)
+    async function redirect(shortId) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/${shortId}`);
+            if (!response.ok) throw new Error("Invalid or expired short link!");
+            const { sourceLink } = await response.json();
+            window.open(sourceLink, "_blank");
+        } catch (error) {
+            alert("Invalid or expired short link!");
+        }
+    }
+
+    // Load links from the GitHub-hosted JSON file on page load
+    window.onload = async function () {
+        const links = await fetchLinks();
+        const linkList = document.getElementById("linkList");
+        links.forEach(({ id: shortId, sourceLink }) => {
+            const shortLink = `http://short.ly/${shortId}`;
+            const listItem = document.createElement("li");
+            listItem.innerHTML = `
+                <strong>Short Link:</strong> 
+                <span class="short-link" onclick="redirect('${shortId}')">${shortLink}</span>
+                <br>
+                <strong>Original Link:</strong> ${sourceLink}
+            `;
+            linkList.appendChild(listItem);
+        });
+    };
+</script>
+
 </body>
 </html>
