@@ -8,7 +8,7 @@ const REDIRECT_DIR = path.join(REPO_DIR, 'Redirect'); // Folder where redirect p
 
 // Define the link database (you should have this from your system or it can be dynamically created)
 const linkDatabase = {
-    'abc123': 'https://example.com/abc123',
+    'esmmow': 'https://getbootstrap.com/',
     'xyz456': 'https://example.com/xyz456',
     'def789': 'https://example.com/def789'
 };
